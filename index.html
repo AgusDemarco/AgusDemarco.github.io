@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Esta página muestra estadísticas más relevantes de la liga de futbol argentina y de sus principales figuras"
+    />
+    <title>Estadísticas del Futbol Argentino</title>
+    <style>
+      body {
+        color: whitesmoke;
+      }
+      .logofiuba {
+        filter: invert(100%);
+        width: 170px;
+        border-radius: 10px;
+        float: left;
+        margin-right: 40px;
+        margin-bottom: 20px;
+      }
+      .grafico {
+        width: 400px;
+        border-radius: 10px;
+        float: center;
+        margin-right: 20px;
+      }
+      h1 {
+        text-align: justify;
+        font-size: 60px;
+        font-weight: bold;
+        font-family: "Courier New", Courier, monospace;
+        margin-right: 20px;
+        margin-bottom: 60px;
+      }
+      .profesor {
+        text-align: justify;
+        font-size: 20px;
+        font-weight: lighter;
+        margin-bottom: 60px;
+      }
+      .nombres {
+        text-align: justify;
+        font-size: 20px;
+        font-weight: lighter;
+      }
+      p {
+        text-align: justify;
+        font-size: 20px;
+        font-family: "Courier New", Courier, monospace;
+        margin: 20px;
+      }
+      .pelota {
+        float: left;
+        width: 1500px;
+        height: 400px;
+        object-fit: cover;
+        margin-bottom: 40px;
+      }
+      h2 {
+        text-align: justify;
+        font-family: "Courier New", Courier, monospace;
+        margin: 20px;
+      }
+      a {
+        font-size: 20px;
+        text-align: justify;
+        margin: 20px;
+        font-family: "Courier New", Courier, monospace;
+      }
+    </style>
+  </head>
+  <body style="background-color: black">
+    <img class="pelota" src="images/Pelota.jpeg" alt="Imagen de una pelota" />
+    <img
+      class="logofiuba"
+      src="images/Logo-fiuba_big.png"
+      alt="Logo de FIUBA"
+    />
+    <h1>Taller de Investigación con Modelización Matemática y Datos</h1>
+    <p class="nombres">Alumnos: <em>Demarco Agustín, Montero Pablo</em></p>
+    <p class="profesor">Profesor: <em>Xavier González</em></p>
+    <p>
+      Esta página muestra estadísticas relevantes de la liga de futbol argentina
+      y de sus principales figuras, con la finalidad de difundir el análisis de
+      los datos para futuros proyectos. Dicho análisis fue hecho en Python,
+      tomando como información la base de datos de cada año de los partidos de
+      la primera división del futbol Argentino, desde 2016 hasta 2021. Todo el
+      material que utilizamos, desde la información hasta los programas, están
+      abierto al público en el siguiente repositorio de Github:
+    </p>
+    <a
+      href="https://github.com/AgusDemarco/Futbol-Argentino.git"
+      target="_blank"
+      >Repositorio de Futbol Argentino
+    </a>
+    <h2>Equipos más goleadores de los últimos 6 años:</h2>
+    <img class="grafico" src="images/TopGoles.png" alt="Top Scorers" />
+    <p></p>
+  </body>
+</html>
