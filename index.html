@@ -14,17 +14,19 @@
       }
       .logofiuba {
         filter: invert(100%);
-        width: 170px;
+        width: 10%;
         border-radius: 10px;
         float: left;
+        margin-left: 20px;
         margin-right: 40px;
         margin-bottom: 20px;
       }
       .grafico {
-        width: 400px;
+        width: 800px;
         border-radius: 10px;
         float: center;
         margin-right: 20px;
+        margin-bottom: 1em;
       }
       h1 {
         text-align: justify;
@@ -52,16 +54,27 @@
         margin: 20px;
       }
       .pelota {
-        float: left;
-        width: 1500px;
+        display: block;
+        width: 99%;
         height: 400px;
         object-fit: cover;
+        margin-left: auto;
+        margin-right: auto;
         margin-bottom: 40px;
       }
       h2 {
         text-align: justify;
         font-family: "Courier New", Courier, monospace;
         margin: 20px;
+        font-size: 40px;
+        margin-top: 3cm;
+      }
+      h3 {
+        text-align: justify;
+        font-family: "Courier New", Courier, monospace;
+        margin: 20px;
+        font-size: 20px;
+        margin-top: 2cm;
       }
       a {
         font-size: 20px;
@@ -69,15 +82,41 @@
         margin: 20px;
         font-family: "Courier New", Courier, monospace;
       }
+      .code {
+        padding-left: 15px;
+        border-left: 1px solid #eee;
+      }
+      pre {
+        background: #f4f4f4;
+        border: 1px solid #ddd;
+        border-left: 3px solid #f36d33;
+        color: #666;
+        page-break-inside: avoid;
+        font-family: monospace;
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 1em;
+        max-width: 70%;
+        overflow: auto;
+        padding: 1em 1.5em;
+        display: block;
+        word-wrap: break-word;
+      }
+      .referencia {
+        background: #f4f4f4;
+        color: #666;
+        font-size: 20px;
+        line-height: 1.6;
+        display: block;
+        max-width: 50%;
+        overflow: auto;
+        padding: 1em 1.5em;
+      }
     </style>
   </head>
   <body style="background-color: black">
-    <img class="pelota" src="images/Pelota.jpeg" alt="Imagen de una pelota" />
-    <img
-      class="logofiuba"
-      src="images/Logo-fiuba_big.png"
-      alt="Logo de FIUBA"
-    />
+    <img class="pelota" src="Pelota.jpeg" alt="Imagen de una pelota" />
+    <img class="logofiuba" src="Logo-fiuba_big.png" alt="Logo de FIUBA" />
     <h1>Taller de Investigación con Modelización Matemática y Datos</h1>
     <p class="nombres">Alumnos: <em>Demarco Agustín, Montero Pablo</em></p>
     <p class="profesor">Profesor: <em>Xavier González</em></p>
@@ -95,8 +134,184 @@
       target="_blank"
       >Repositorio de Futbol Argentino
     </a>
-    <h2>Equipos más goleadores de los últimos 6 años:</h2>
-    <img class="grafico" src="images/TopGoles.png" alt="Top Scorers" />
+    <h3>Tabla de Referencias:</h3>
+    <a class="referencia" href="#primer paso"
+      >1. Importar librerías e información</a
+    >
     <p></p>
+    <a class="referencia" href="#segundo paso">2. Armado de Tablas</a>
+    <p></p>
+    <a class="referencia" href="#tercer paso">3. Gráfico de Métricas</a>
+    <h2 id="primer paso">
+      1er paso: Importamos las librerías y los datos a Python
+    </h2>
+    <p>
+      Lo que hicimos en esta etapa fue importar los datasets para cada año en
+      Python. Cada dataset lo almacenamos en la llave de un diccionario, para
+      luego adjuntarlo en un solo dataframe.
+    </p>
+    <p>
+      Para todo el trabajo, utilizamos las siguientes librerías, que importamos
+      desde Python:
+    </p>
+    <td class="pre">
+      <pre>
+            <span>
+              import pandas as pd
+              import json
+              from yaml import load
+              import seaborn as sns
+              import matplotlib.pyplot as plt
+              import numpy as np
+            </span>
+        </pre>
+    </td>
+    <p>
+      Luego, para cada dataset (los renombramos como "dataaño") los importamos a
+      Python de la siguiente manera:
+    </p>
+    <td class="pre">
+      <pre>
+            <span>
+              with open('data2016.json') as json_file:
+              data = json.load(json_file)
+              archivo = pd.DataFrame(data)
+              info['2016']= archivo
+              del archivo
+              data.clear()
+            </span>
+        </pre>
+    </td>
+    <p>
+      Donde info es un diccionario en el que cada llave es el año del torneo:
+    </p>
+    <td class="pre">
+      <pre>
+            <span>
+              # Genero un diccionario en el que cada llave contiene la base de datos del año respectivo
+              info = {'2016': None,'2017': None,'2018': None,'2019': None,'2020': None,'2021': None}
+            </span>
+        </pre>
+    </td>
+    <p>
+      El último paso fue concatenar todos los elementos del diccionario, en el
+      mismo dataframe:
+    </p>
+    <td class="pre">
+      <pre>
+            <span>
+              # Creo un solo dataset de todos los años
+              archivo = pd.concat([info["2016"], info["2017"],info["2018"],info["2019"],info["2020"],info["2021"]], axis=1, join='inner')
+            </span>
+        </pre>
+    </td>
+    <h2 id="segundo paso">
+      2do paso: buscamos dentro del Dataset, la información relevante para las
+      estadísticas
+    </h2>
+    <p>
+      Quisimos calular, para cada equipo, la cantidad de goles, partidos
+      jugardos y partidos ganados, empatados y perdidos. Para esto, procedimos
+      similar al modo anterior: creamos un nuevo diccionario en el que cada
+      llave es un equipo y los elementos de cada llave son estas variables.
+      Primero, creamos el diccionario con cada equipo, comparando y
+      almacenándolos en caso de que no lo contenga:
+    </p>
+    <td class="pre">
+      <pre>
+            <span>
+              #Creo un diccionario donde cada llave son los equipos
+              gol = {}
+              for ele in archivo:
+              local = archivo[ele]['matchCentreData']['home']['name']
+              if local not in gol.keys():
+                gol[local]= {'goles':0,'partidos':0,'ganados':0,'perdidos':0,'empatados':0}
+              visitante = archivo[ele]['matchCentreData']['away']['name']
+              if visitante not in gol.keys():
+                gol[visitante]= {'goles':0,'partidos':0,'ganados':0,'perdidos':0,'empatados':0}
+            </span>
+        </pre>
+    </td>
+    <p>
+      Una vez creado el diccionario, resta calcular el resultado de estos
+      parámetros. Para hacer esto, comparamos el resultado del partido. De este
+      modo sabemos cuántos goles hizo cada equipo, cuántos partidos jugó cada
+      uno y cómo fue el resultado (ganó, empató o perdió).
+    </p>
+    <td class="pre">
+      <pre>
+            <span>
+              #Sumo los goles en cada equipo
+              for ele in archivo:
+                df2 = archivo[ele]['matchCentreData']
+                local = df2['home']['name']
+                gollocal = df2['score'][0]
+                visitante = df2['away']['name']
+                golvisita = df2['score'][4]
+                # Sumo los goles en el diccionario
+                gol[local]['goles'] = gol[local]['goles'] + int(gollocal)
+                gol[visitante]['goles']=gol[visitante]['goles'] + int(golvisita)
+                #Sumo los partidos en el diccionario
+                gol[local]['partidos'] = gol[local]['partidos'] + 1
+                gol[visitante]['partidos']=gol[visitante]['partidos'] + 1
+                # Sumo las victorias, empates y perdidas
+                if gollocal > golvisita:
+                 gol[local]['ganados'] = gol[local]['ganados'] + 1
+                 gol[visitante]['perdidos']=gol[visitante]['perdidos'] + 1
+                elif gollocal < golvisita:
+                 gol[local]['perdidos'] = gol[local]['perdidos'] + 1
+                 gol[visitante]['ganados']=gol[visitante]['ganados'] + 1
+                else:
+                 gol[local]['empatados'] = gol[local]['empatados'] + 1
+                 gol[visitante]['empatados']=gol[visitante]['empatados'] + 1  
+            </span>
+        </pre>
+    </td>
+    <p>El resultado de los cálculos:</p>
+    <img class="grafico" src="tablaEquipos.jpeg" alt="Tabla de Equipos" />
+    <h2 id="tercer paso">3er paso: graficamos las métricas</h2>
+    <p>
+      En primer lugar, quisimos saber cuáles son los equimos más goleadores de
+      los últimos años. Este parámetro ya fue calculado, por lo que solamente
+      hay que reordenarlos y crear el gráfico:
+    </p>
+    <td class="pre">
+      <pre>
+            <span>
+              goleadores = tabla.sort_values(by='goles',ascending = False).iloc[:,[0]].head()
+              goleadores.plot.bar(rot=0,title = 'Equipos más goleadores')
+              goleadores['Equipos'] = goleadores.index
+              ax = sns.barplot(x = 'Equipos',
+                          y = 'goles',
+                          data = goleadores,
+                          palette = 'Blues')
+              show_values(ax)
+              
+              plt.show()
+            </span>
+        </pre>
+    </td>
+    <p>Los resultados son los siguientes:</p>
+    <img class="grafico" src="EquiposGoles.jpeg" alt="Equipos más goleadores" />
+    <p>
+      Además, para estos equipos, quisimos comparar su performance en los
+      partidos. Para esto, creamos un nuevo gráfico de barras:
+    </p>
+    <td class="pre">
+      <pre>
+            <span>
+              plt.figure(figsize=(3,1))
+              ax =perf.plot(x="Equipos", y=["ganados", "perdidos",'empatados'], kind="bar")
+              show_values(ax)
+              plt.show()
+            </span>
+        </pre>
+    </td>
+    <p>Los resultados son los siguientes:</p>
+    <img
+      class="grafico"
+      src="GraficoEquipos.jpeg"
+      alt="Performance de Equipos"
+    />
   </body>
 </html>
