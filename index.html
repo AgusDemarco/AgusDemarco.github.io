@@ -134,6 +134,12 @@
       target="_blank"
       >Repositorio de Futbol Argentino
     </a>
+    <p>
+      A su vez, podrán ver en esta página una explicación de nuestro
+      razonamiento, como guía de soporte al código en Python. Esto podría servir
+      a alguien que por primera vez trabaja con archivos de este estilo, como
+      fue nuestro caso.
+    </p>
     <h3>Tabla de Referencias:</h3>
     <a class="referencia" href="#primer paso"
       >1. Importar librerías e información</a
@@ -142,9 +148,9 @@
     <a class="referencia" href="#segundo paso">2. Armado de Tablas</a>
     <p></p>
     <a class="referencia" href="#tercer paso">3. Gráfico de Métricas</a>
-    <h2 id="primer paso">
-      1er paso: Importamos las librerías y los datos a Python
-    </h2>
+    <p></p>
+    <a class="referencia" href="#jugadores">4. Análisis de Jugadores</a>
+    <h2 id="primer paso">1. Importamos las librerías y los datos a Python</h2>
     <p>
       Lo que hicimos en esta etapa fue importar los datasets para cada año en
       Python. Cada dataset lo almacenamos en la llave de un diccionario, para
@@ -167,8 +173,11 @@
         </pre>
     </td>
     <p>
-      Luego, para cada dataset (los renombramos como "dataaño") los importamos a
-      Python de la siguiente manera:
+      Los links de descarga de cada dataset podrán encontrarlos en el
+      respositorio de Github. Estos son archivos en formato json, que tuvimos
+      que trabajar para transformar el formato y encontrar la información
+      relevante. En primer lugar, para cada dataset (los renombramos como
+      "dataaño") los importamos a Python de la siguiente manera:
     </p>
     <td class="pre">
       <pre>
@@ -183,7 +192,7 @@
         </pre>
     </td>
     <p>
-      Donde info es un diccionario en el que cada llave es el año del torneo:
+      Donde "info" es un diccionario en el que cada llave es el año del torneo:
     </p>
     <td class="pre">
       <pre>
@@ -205,10 +214,7 @@
             </span>
         </pre>
     </td>
-    <h2 id="segundo paso">
-      2do paso: buscamos dentro del Dataset, la información relevante para las
-      estadísticas
-    </h2>
+    <h2 id="segundo paso">2. Información Relevante para Estadísticas</h2>
     <p>
       Quisimos calular, para cada equipo, la cantidad de goles, partidos
       jugardos y partidos ganados, empatados y perdidos. Para esto, procedimos
@@ -269,7 +275,7 @@
     </td>
     <p>El resultado de los cálculos:</p>
     <img class="grafico" src="tablaEquipos.jpeg" alt="Tabla de Equipos" />
-    <h2 id="tercer paso">3er paso: graficamos las métricas</h2>
+    <h2 id="tercer paso">3. Graficamos las Métricas</h2>
     <p>
       En primer lugar, quisimos saber cuáles son los equimos más goleadores de
       los últimos años. Este parámetro ya fue calculado, por lo que solamente
@@ -313,5 +319,153 @@
       src="GraficoEquipos.jpeg"
       alt="Performance de Equipos"
     />
+    <h2 id="jugadores">4. Análisis de Jugadores</h2>
+    <p>
+      Decidimos llevar el análisis un paso más allá, y obtener estadísticas de
+      los jugadores más relevantes de los últimos años.
+    </p>
+    <p>
+      Para esto, procedimos de manera similar al código mostrado anteriormente:
+      generamos un DataFrame con los jugadores como protagonistas, y para cada
+      uno de ellos calculamos la cantidad de goles, asistencias, expulsiones,
+      entre otros. Luego, ponderamos estos factores para determinar quiénes son
+      los más relevantes en función cada categoría, y de la posición del
+      jugador. Si bien hicimos el análisis para todos los años, mostraremos los
+      resultados que obtuvimos para el 2021 con el fin de facilitar la lectura y
+      priorizar el desarrollo del código.
+    </p>
+    <h3>4.1 Armado de Tablas</h3>
+    <p>
+      Comenzamos armando las tablas de con la información más relevante. En
+      estas tablas, cada fila representa un jugador distinto y las columnas son
+      estadísticas para cada año.
+    </p>
+    <p>Obtenemos de la siguiente manera, la lista de jugadores:</p>
+    <td class="pre">
+      <pre>
+            <span>
+              name={}
+              def players_name(year):
+                  result = {}
+                  for game in games_played:
+                      for where in ('home','away'):
+                          players = archivo[game]['matchCentreData'][where]['players']
+                          for player in players:
+                              player_id = player['playerId']
+                              if player_id not in result:
+                                  result[player_id] = player['name']
+                  return result
+
+              for year in years:
+                name["name"] = players_name(year)
+            </span>
+        </pre>
+    </td>
+    <p>
+      Para cada jugador, determinamos algunos datos personales como la posición,
+      el club, peso, edad actual y altura. La lógica fue la siguiente:
+    </p>
+    <td class="pre">
+      <pre>
+            <span>
+              team={}
+              def players_team(year):
+                  result = {}
+                  games = globals()[f"games_{year}"]
+                  tournament = globals()[f"torneo_{year}"]
+                  for game in games:
+                      for where in ('home','away'):
+                          players = tournament[game]['matchCentreData'][where]['players']
+                          team_oponents = tournament[game]['matchCentreData'][where]['name']
+                          for player in players:
+                              player_id = player['playerId']
+                              if player_id not in result:
+                                  result[player_id] = team_oponents
+                  return result
+
+              for year in years:
+                  team[f"team_{year}"] = players_team(year)
+            </span>
+        </pre>
+    </td>
+    <h3>4.2 Cálculo de Estadísticas</h3>
+    <p>
+      Luego, indexamos a cada jugador las estadísticas que usaríamos más
+      adelante para armar los rankings. Algunas de estas son: goles,
+      asistencias, tarjetas, jugador del partido, pases, barridas, faltas. La
+      lógica es similar a la anterior:
+    </p>
+    <td class="pre">
+      <pre>
+            <span>
+            events_goal = {}
+            def goal_players(year):
+                result = {}
+                games = globals()[f"games_{year}"]
+                tournament = globals()[f"torneo_{year}"]
+                for game in games:
+                    for where in ('home','away'):
+                        events=tournament[game]['matchCentreData'][where]['incidentEvents']
+                        for event in events:
+                            try:
+                                player_id = event['playerId']
+                                goal = event['isGoal']
+                                if player_id not in result:
+                                    result[player_id] = 0
+                                if goal is True:
+                                    result[player_id] += 1
+                            except KeyError:
+                                1
+                return result
+
+            for year in years:
+                events_goal[f"goal_{year}"] = goal_players(year)
+            </span>
+        </pre>
+    </td>
+    <h3>4.3 Resultados</h3>
+    <p>
+      Una vez que conseguimos las estadísticas más importantes para cada
+      jugador, solo restó ponderar cada una, en función de la posición, para
+      poder comparar entre ellos y determinar a los jugadores más relevantes. El
+      criterio que elejimos fue el siguiente:
+    </p>
+    <td class="pre">
+      <pre>
+            <span>
+              def most_valuable_GK(year):
+                  Players_Structured_Info[f"MostValuableGK_{year}"] =  5*Players_Structured_Info[f"mvp_{year}"] + Players_Structured_Info[f"saves_{year}"] + Players_Structured_Info[f"passesSuccess_{year}"]  - Players_Structured_Info[f"foulsCommited_{year}"]  - 2*Players_Structured_Info[f"yellow_card_{year}"] - 4*Players_Structured_Info[f"red_card_{year}"]
+                  return Players_Structured_Info
+              for year in years:
+                  most_valuable_GK(year)
+                  
+              def most_valuable_defender(year):
+                  Players_Structured_Info[f"MostValuableDEF_{year}"] =  5*Players_Structured_Info[f"mvp_{year}"] + Players_Structured_Info[f"passesSuccess_{year}"] + 2*Players_Structured_Info[f"successTackles_{year}"] + 2*Players_Structured_Info[f"interceptions_{year}"] - Players_Structured_Info[f"foulsCommited_{year}"] + 4*Players_Structured_Info[f"goal_{year}"] + Players_Structured_Info[f"assist_{year}"] - 2*Players_Structured_Info[f"yellow_card_{year}"] - 4*Players_Structured_Info[f"red_card_{year}"]
+                  return Players_Structured_Info
+              for year in years:
+                  most_valuable_defender(year)
+                  
+              def most_valuable_MidFielder(year):
+                  Players_Structured_Info[f"MostValuableMID_{year}"] =  5*Players_Structured_Info[f"mvp_{year}"] + 2*Players_Structured_Info[f"passesSuccess_{year}"] + Players_Structured_Info[f"successTackles_{year}"] + 3*Players_Structured_Info[f"successDribles_{year}"] + 2*Players_Structured_Info[f"interceptions_{year}"] - Players_Structured_Info[f"foulsCommited_{year}"] + 4*Players_Structured_Info[f"goal_{year}"] + 4*Players_Structured_Info[f"assist_{year}"] - 2*Players_Structured_Info[f"yellow_card_{year}"] - 4*Players_Structured_Info[f"red_card_{year}"]
+                  return Players_Structured_Info
+              for year in years:
+                  most_valuable_MidFielder(year)
+                  
+              def most_valuable_Forward(year):
+                  Players_Structured_Info[f"MostValuableFOR_{year}"] =  5*Players_Structured_Info[f"mvp_{year}"] + Players_Structured_Info[f"passesSuccess_{year}"] + 3*Players_Structured_Info[f"successDribles_{year}"] + Players_Structured_Info[f"interceptions_{year}"] - Players_Structured_Info[f"foulsCommited_{year}"] + 4*Players_Structured_Info[f"goal_{year}"] + 3*Players_Structured_Info[f"assist_{year}"] - 2*Players_Structured_Info[f"yellow_card_{year}"] - 4*Players_Structured_Info[f"red_card_{year}"]
+                  return Players_Structured_Info
+              for year in years:
+                  most_valuable_Forward(year)
+            </span>
+        </pre>
+    </td>
+    <h4>Top Arqueros 2021</h4>
+    <img src="Tabla arqueros 2021.png" alt="" />
+    <h4>Top Defensores 2021</h4>
+    <img src="Tabla defensores 2021.png" alt="" />
+    <h4>Top Mediocampistas 2021</h4>
+    <img src="Tabla mediocampo 2021.png" alt="" />
+    <h4>Top Delanterios 2021</h4>
+    <img src="Tabla delanteros 2021.png" alt="" />
   </body>
 </html>
